@@ -258,7 +258,12 @@ class Flow {
     this.globalContext.sourceDatabase = combinedOptions.sourceDatabase || this.globalContext.sourceDatabase;
 
     if (!(combinedOptions.noBatchWrite || combinedOptions.disableJobOutput)) {
-      let batchDoc = this.datahub.jobs.createBatch(jobDoc, flowStep, stepNumber);
+      const flowStepWithOptions = Object.assign(
+        {},
+        flowStep,
+        {"options": Object.assign({}, flowStep.options, combinedOptions)}
+      );
+      let batchDoc = this.datahub.jobs.createBatch(jobDoc, flowStepWithOptions, stepNumber);
       this.globalContext.batchId = batchDoc.batch.batchId;
     }
 

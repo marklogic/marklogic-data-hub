@@ -316,10 +316,13 @@ public class FlowRunnerTest extends AbstractHubCoreTest {
 
         Map<String,Object> opts = new HashMap<>();
         List<String> coll = new ArrayList<>();
+        String mappingJobId = UUID.randomUUID().toString();
+
         coll.add("test-collection");
         opts.put("targetDatabase", HubConfig.DEFAULT_FINAL_NAME);
         opts.put("collections", coll);
         opts.put("sourceQuery", "cts.collectionQuery('test-collection')");
+
         RunFlowResponse resp = runFlow("testFlow", "1,2", UUID.randomUUID().toString(), opts, null);
         flowRunner.awaitCompletion();
         Assertions.assertEquals(2, getDocCount(HubConfig.DEFAULT_FINAL_NAME, "test-collection"));
@@ -327,10 +330,14 @@ public class FlowRunnerTest extends AbstractHubCoreTest {
 
         opts.put("targetDatabase", HubConfig.DEFAULT_STAGING_NAME);
         opts.put("sourceDatabase", HubConfig.DEFAULT_FINAL_NAME);
-        resp = runFlow("testFlow", "5", UUID.randomUUID().toString(), opts, null);
+        opts.put("testRunFlowOption", "xyzzy");
+        resp = runFlow("testFlow", "5", mappingJobId, opts, null);
         flowRunner.awaitCompletion();
+        JsonNode batchDoc = findFirstBatchDocument(mappingJobId);
         Assertions.assertEquals(2, getDocCount(HubConfig.DEFAULT_STAGING_NAME, "test-collection"));
         Assertions.assertTrue(JobStatus.FINISHED.toString().equalsIgnoreCase(resp.getJobStatus()));
+        Assertions.assertEquals("cts.collectionQuery('test-collection')", batchDoc.get("batch").get("step").get("options").get("sourceQuery").asText());
+        Assertions.assertEquals("xyzzy", batchDoc.get("batch").get("step").get("options").get("testRunFlowOption").asText());
     }
 
     @Test
