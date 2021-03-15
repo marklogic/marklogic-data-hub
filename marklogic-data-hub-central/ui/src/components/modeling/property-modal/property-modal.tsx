@@ -30,7 +30,7 @@ import {
   DROPDOWN_PLACEHOLDER
 } from "../../../config/modeling.config";
 
-const { Option } = Select;
+const {Option} = Select;
 
 type Props = {
   entityName: any;
@@ -144,7 +144,7 @@ const PropertyModal: React.FC<Props> = (props) => {
   const [typeErrorMessage, setTypeErrorMessage] = useState("");
 
   const [showJoinProperty, toggleShowJoinProperty] = useState(false);
-  const [joinDisplayValue, setJoinDisplayValue] = useState("");
+  const [joinDisplayValue, setJoinDisplayValue] = useState<string | undefined>(undefined);
   const [joinProperties, setJoinProperties] = useState<any[]>([]);
   const [joinErrorMessage, setJoinErrorMessage] = useState("");
 
@@ -223,7 +223,7 @@ const PropertyModal: React.FC<Props> = (props) => {
         setName("");
         setErrorMessage("");
         setTypeDisplayValue([]);
-        setJoinDisplayValue("");
+        setJoinDisplayValue(undefined);
         setRadioValues([]);
         toggleShowConfigurationOptions(false);
         toggleShowJoinProperty(false);
@@ -339,7 +339,7 @@ const PropertyModal: React.FC<Props> = (props) => {
       setSelectedPropertyOptions({...selectedPropertyOptions, type: "", propertyType: PropertyType.Basic});
     }
     setTypeErrorMessage("");
-    setJoinDisplayValue("");
+    setJoinDisplayValue(undefined);
     setJoinErrorMessage("");
   };
 
@@ -610,40 +610,38 @@ const PropertyModal: React.FC<Props> = (props) => {
     const model = entity.model.definitions[entityModel];
     // Check each property and build menu item
     const result = Object.keys(model.properties).map(key => {
-        // Structured property case
-        if (model.properties[key].hasOwnProperty("$ref")) {
-          return {
-            value: key, 
-            label: key, 
-            type: "", // TODO
-            disabled: true,
-            // TODO for supporting structure properties
-            // children: getJoinProps(
-            //   entityName,
-            //   model.properties[key]["$ref"].split("#/definitions/")[1],
-            //   response
-            // )
-          }
-        } 
+      // Structured property case
+      if (model.properties[key].hasOwnProperty("$ref")) {
+        return {
+          value: key,
+          label: key,
+          type: "", // TODO
+          disabled: true,
+          // TODO for supporting structure properties
+          // children: getJoinProps(
+          //   entityName,
+          //   model.properties[key]["$ref"].split("#/definitions/")[1],
+          //   response
+          // )
+        };
+      } else if (model.properties[key]["datatype"] === "array") {
         // Array property case
-        else if (model.properties[key]["datatype"] === "array") {
-          return {
-            value: key, 
-            label: key, 
-            type: "", // TODO
-            disabled: true
-          }
-        } 
+        return {
+          value: key,
+          label: key,
+          type: "", // TODO
+          disabled: true
+        };
+      } else {
         // Default case
-        else {
-          return {
-            value: key, 
-            label: key, 
-            type: model.properties[key].datatype
-          }
-        }
-      })
-      return result;
+        return {
+          value: key,
+          label: key,
+          type: model.properties[key].datatype
+        };
+      }
+    });
+    return result;
   };
 
   const createJoinMenu = async (entityName, entityProp) => {
@@ -663,7 +661,7 @@ const PropertyModal: React.FC<Props> = (props) => {
     const type = joinProperties.find(prop => prop["value"] === value).type;
     setSelectedPropertyOptions({...selectedPropertyOptions, joinPropertyName: value, joinPropertyType: type});
     setJoinErrorMessage("");
-  }
+  };
 
   const onRadioChange = (event, radioName) => {
     if (radioName === "identifier" && event.target.value === "yes") {
@@ -887,17 +885,17 @@ const PropertyModal: React.FC<Props> = (props) => {
             validateStatus={joinErrorMessage ? "error" : ""}
             help={joinErrorMessage}
           >
-            <Select 
+            <Select
               placeholder="Select the join property"
               onChange={onJoinPropertyChange}
               value={joinDisplayValue}
               aria-label="joinProperty-select"
             >
-            {joinProperties.length > 0 && joinProperties.map((prop) => (
-              <Option value={prop.value} disabled={prop.disabled}>{prop.label}</Option>
-            ))}
+              {joinProperties.length > 0 && joinProperties.map((prop) => (
+                <Option value={prop.value} disabled={prop.disabled} aria-label={`${prop.label}-option`}>{prop.label}</Option>
+              ))}
             </Select>
-          </Form.Item> 
+          </Form.Item>
         ) }
 
         {renderRadios}

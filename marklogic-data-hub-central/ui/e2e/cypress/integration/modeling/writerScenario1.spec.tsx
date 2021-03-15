@@ -55,6 +55,8 @@ describe("Entity Modeling Senario 1: Writer Role", () => {
     propertyModal.openPropertyDropdown();
     propertyModal.getTypeFromDropdown("Related Entity").click();
     propertyModal.getCascadedTypeFromDropdown("Person").click();
+    propertyModal.openJoinPropertyDropdown();
+    propertyModal.getJoinProperty("id").click();
     propertyModal.getYesRadio("multiple").click();
     propertyModal.getSubmitButton().click();
     propertyTable.getMultipleIcon("user").should("exist");
@@ -98,6 +100,8 @@ describe("Entity Modeling Senario 1: Writer Role", () => {
     propertyModal.openPropertyDropdown();
     propertyModal.getTypeFromDropdown("Related Entity").click();
     propertyModal.getCascadedTypeFromDropdown("Customer").click();
+    propertyModal.openJoinPropertyDropdown();
+    propertyModal.getJoinProperty("customerId").click();
     propertyModal.getYesRadio("idenifier").should("not.exist");
     propertyModal.getYesRadio("multiple").click();
     propertyModal.getNoRadio("pii").should("not.exist");

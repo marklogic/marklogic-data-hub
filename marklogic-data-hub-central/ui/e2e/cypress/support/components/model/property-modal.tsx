@@ -56,6 +56,18 @@ class PropertyModal {
   getToggleStepsButton() {
     return cy.findByLabelText("toggle-steps");
   }
+
+  getJoinPropertyDropdown() {
+    return  cy.findByPlaceholderText("Select a join property");
+  }
+
+  openJoinPropertyDropdown() {
+    cy.findByLabelText("joinProperty-select").trigger("mouseover").click();
+  }
+
+  getJoinProperty(propertyName: string) {
+    return cy.waitUntil(() => cy.findByLabelText(`${propertyName}-option`));
+  }
 }
 
 const propertyModal = new PropertyModal();

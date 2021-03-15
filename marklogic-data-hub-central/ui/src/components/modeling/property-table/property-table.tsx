@@ -341,7 +341,7 @@ const PropertyTable: React.FC<Props> = (props) => {
     let multiple = propertyOptions.multiple === "yes" ? true : false;
     let facetable = propertyOptions.facetable;
     let sortable = propertyOptions.sortable;
-    
+
     if (propertyOptions.propertyType === PropertyType.RelatedEntity && !multiple) {
       let externalEntity = modelingOptions.entityTypeNamesArray.find(entity => entity.name === propertyOptions.type);
       return {
@@ -449,7 +449,6 @@ const PropertyTable: React.FC<Props> = (props) => {
   };
 
   const editPropertyShowModal = (text: string, record: any) => {
-    console.log("editPropertyShowModal", modelingOptions, record);
     let parseKey = record.key.split(",");
     let propertyType = PropertyType.Basic;
     let newStructuredTypes: StructuredTypeOptions = DEFAULT_STRUCTURED_TYPE_OPTIONS;

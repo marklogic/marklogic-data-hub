@@ -156,6 +156,8 @@ describe("Entity Modeling: Writer Role", () => {
     propertyModal.openPropertyDropdown();
     propertyModal.getTypeFromDropdown("Related Entity").click();
     propertyModal.getCascadedTypeFromDropdown("Person").click();
+    propertyModal.openJoinPropertyDropdown();
+    propertyModal.getJoinProperty("Address").click();
     propertyModal.getYesRadio("multiple").click();
     propertyModal.getYesRadio("idenifier").should("not.exist");
     propertyModal.getYesRadio("pii").should("not.exist");
@@ -176,6 +178,19 @@ describe("Entity Modeling: Writer Role", () => {
     propertyTable.expandStructuredTypeIcon("alt_address").click();
     propertyTable.getProperty("streetAlt").should("exist");
   });
+  it("Add join property with type as Related Entity", () => {
+    propertyTable.getAddPropertyButton("User3").click();
+    propertyModal.newPropertyName("OrderedBy");
+    propertyModal.getJoinPropertyDropdown().should("not.exist");
+    propertyModal.openPropertyDropdown();
+    propertyModal.getTypeFromDropdown("Related Entity").click();
+    propertyModal.getCascadedTypeFromDropdown("Customer").click();
+    propertyModal.openJoinPropertyDropdown();
+    propertyModal.getJoinProperty("nicknames").should("not.be.enabled");
+    propertyModal.getJoinProperty("customerId").click();
+    propertyModal.getSubmitButton().click();
+    propertyTable.getProperty("OrderedBy").should("exist");
+  });
   it("Delete a property, a structured property and then the entity", () => {
     //Structured Property
     propertyTable.getDeleteStructuredPropertyIcon("User3", "Address", "streetAlt").click();
@@ -187,9 +202,14 @@ describe("Entity Modeling: Writer Role", () => {
     confirmationModal.getDeletePropertyWarnText().should("exist");
     confirmationModal.getYesButton(ConfirmationType.DeletePropertyWarn).click();
     propertyTable.getProperty("alt_address").should("not.exist");
+    propertyTable.getDeletePropertyIcon("User3", "OrderedBy").click();
+    confirmationModal.getDeletePropertyWarnText().should("exist");
+    confirmationModal.getYesButton(ConfirmationType.DeletePropertyWarn).click();
+    propertyTable.getProperty("OrderedBy").should("not.exist");
     entityTypeTable.getSaveEntityIcon("User3").click();
     confirmationModal.getSaveEntityText().should("be.visible");
     confirmationModal.getYesButton(ConfirmationType.SaveEntity).click();
+    cy.waitForAsyncRequest();
     confirmationModal.getSaveEntityText().should("exist");
     confirmationModal.getSaveEntityText().should("not.exist");
     //Entity
@@ -253,6 +273,8 @@ describe("Entity Modeling: Writer Role", () => {
     propertyModal.openPropertyDropdown();
     propertyModal.getTypeFromDropdown("Related Entity").click();
     propertyModal.getCascadedTypeFromDropdown("Order").click();
+    propertyModal.openJoinPropertyDropdown();
+    propertyModal.getJoinProperty("orderId").click();
     propertyModal.getYesRadio("multiple").click();
     propertyModal.getSubmitButton().click();
     propertyTable.getMultipleIcon("order").should("exist");
@@ -287,12 +309,14 @@ describe("Entity Modeling: Writer Role", () => {
     //propertyTable.getWildcardIcon('patientID').should('exist');
     propertyTable.getAddPropertyButton("Patient").should("exist");
     propertyTable.getAddPropertyButton("Patient").click();
-    propertyModal.newPropertyName("conceptType");
+    propertyModal.newPropertyName("personType");
     propertyModal.openPropertyDropdown();
     propertyModal.getTypeFromDropdown("Related Entity").click();
-    propertyModal.getCascadedTypeFromDropdown("Concept").click();
+    propertyModal.getCascadedTypeFromDropdown("Person").click();
+    propertyModal.openJoinPropertyDropdown();
+    propertyModal.getJoinProperty("id").click();
     propertyModal.getSubmitButton().click();
-    propertyTable.getProperty("conceptType").should("exist");
+    propertyTable.getProperty("personType").should("exist");
   });
   it("Add second property to Patient Entity and delete it", () => {
     propertyTable.getAddPropertyButton("Patient").click();
@@ -322,6 +346,7 @@ describe("Entity Modeling: Writer Role", () => {
     //Save Changes
     modelPage.getSaveAllButton().click();
     confirmationModal.getYesButton(ConfirmationType.SaveAll).click();
+    cy.waitForAsyncRequest();
     confirmationModal.getSaveAllEntityText().should("exist");
     confirmationModal.getSaveAllEntityText().should("not.exist");
     modelPage.getEntityModifiedAlert().should("not.exist");
@@ -331,10 +356,8 @@ describe("Entity Modeling: Writer Role", () => {
     propertyTable.getSortIcon("health").should("exist");
     //Delete Entity
     entityTypeTable.getDeleteEntityIcon("Concept").click();
-    confirmationModal.getYesButton(ConfirmationType.DeleteEntityRelationshipWarn).click();
-    confirmationModal.getDeleteEntityRelationshipText().should("exist");
+    confirmationModal.getYesButton(ConfirmationType.DeleteEntity).click();
     confirmationModal.getDeleteEntityRelationshipText().should("not.exist");
     entityTypeTable.getEntity("Concept").should("not.exist");
-    propertyTable.getProperty("conceptType").should("not.exist");
   });
 });
