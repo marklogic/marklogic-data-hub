@@ -22,7 +22,7 @@
     "bootstrap": "^5.0.2",
     "bootstrap-daterangepicker": "^3.1.0",
     "clean": "^4.0.2",
-    "crypto-js": "^4.0.0",
+    "crypto-js": "^4.2.0",
     "dayjs": "^1.11.0",
     "eventsource": "1.1.2",
     "fast-xml-parser": "^4.2.6",
